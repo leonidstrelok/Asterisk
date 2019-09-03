@@ -1,0 +1,36 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">Категории</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var conf in Model)
+        {
+            @foreach (var category in conf.Categories.Keys)
+            {
+                <tr>
+                    <td scope="col">&emsp;&emsp;<strong>@conf.Categories[category]</strong></td>
+                </tr>
+                foreach (var keyline in conf.Lines(category).Keys)
+                {
+                    <tr>
+                        <td>@conf.Lines(category)[keyline]</td>
+                    </tr>
+                }
+            }
+            @*@foreach (int keyLine in Model.Lines(conf).Keys)
+            {
+                <p>@keyLine</p>
+                <p>@getConfig.Lines(conf)[keyLine]</p>
+            }*@
+        }
+
+
+    </tbody>
+</table>

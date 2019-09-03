@@ -1,0 +1,86 @@
+﻿@using AsteriskWeb.Paginations
+@model IndexViewModel
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+
+}
+
+<a asp-action="Create" data-toggle="modal" data-target="#register"><i class="fas fa-user-plus" style="content: 'f234'; font-size: 2em;"></i></a>
+<div class="accordion" id="accordionExample">
+    <div class="card">
+
+        @foreach (var conf in Model.GetConfigResponses)
+        {
+
+            @foreach (var category in conf.Categories.Keys)
+            {
+                <div class="card-header" id="heading_@category">
+                    <h2 class="mb-0">
+                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapse_@category" aria-expanded="false" aria-controls="collapse_@category">
+                            @conf.Categories[category]
+                        </button>
+                        @if (conf.Categories[category] != "general")
+                        {
+                            <a asp-action="DeleteUser" asp-route-idUser="@conf.Categories[category]"><i class="fas fa-trash" style="content: '\f1f8';  font-size: 0.5em;"></i></a>
+                            <a asp-action="UpdateConfig" data-toggle="modal" data-target="#update" data-whatever="@conf.Categories[category]"><i class="far fa-edit" style="content: 'f084'; font-size: 0.5em;"></i></a>
+                        }
+                    </h2>
+                </div>
+                foreach (var keyline in conf.Lines(category).Keys)
+                {
+                    <div id="collapse_@category" class="collapse" aria-labelledby="heading_@category" data-parent="#accordionExample">
+                        <div class="card-body">
+                            
+                                @conf.Lines(category)[keyline]
+                            
+                        </div>
+                    </div>
+                    @*<input type="hidden" id="LineCategory" data-whatever="@conf.Lines(category)[keyline]" />*@
+                    <a asp-action="UpdateConfig" data-toggle="modal" id="LineCategory" data-target="#update"  data-whatever="@conf.Categories[category],@conf.Lines(category)[keyline]"></a>
+
+                }
+            }
+        }
+
+    </div>
+</div>
+@if (Model.PageViewModel.HasPreviousPage)
+{
+    <a asp-action="Index"
+       asp-route-page="@(Model.PageViewModel.PageNumber - 1)"
+       class="btn btn-default">
+        Назад
+    </a>
+}
+@if (Model.PageViewModel.HasNextPage)
+{
+    <a asp-action="Index"
+       asp-route-page="@(Model.PageViewModel.PageNumber + 1)"
+       class="btn btn-default">
+        Вперед
+    </a>
+}
+
+@await Html.PartialAsync("_CreateNewUser")
+@await Html.PartialAsync("_UpdateConf")
+@section Scripts{
+    <script>
+
+        $('#update').on('shown.bs.modal', function (event) {
+            var button = $(event.relatedTarget)
+            console.log(button);
+
+            var recipient = button.data('whatever');
+            recipient = recipient.split(',')
+            var modal = $(this)
+            modal.find('#name').val(recipient)
+            modal.find('#pass').val(recipient[1])
+            modal.find('#fullName').val(recipient[2])
+            console.log(recipient);
+           
+            
+        });
+    </script>
+}
